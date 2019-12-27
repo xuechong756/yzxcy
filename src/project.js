@@ -1983,7 +1983,7 @@ window.__require = function e(t, n, o) {
 									console.log('开始播放');
 								} else if (obj.code === 10001) {
 									{
-										this.schedule(this.timerSchedule, 1);
+										thisObj.schedule(thisObj.timerSchedule, 1);
 										var o = y.RecordGrid.getLastIdiomAry()[0];
 										thisObj.tipsScript = f.GameEngine.showTips(o);
 										setTimeout(function(){
@@ -1992,7 +1992,8 @@ window.__require = function e(t, n, o) {
 										}.bind(thisObj), 2000);
 									}
 								} else {
-									console.log('广告异常');
+									//console.log('广告异常');
+									thisObj.schedule(thisObj.timerSchedule, 1);
 								}
 							}.bind(this));
 						}else{
