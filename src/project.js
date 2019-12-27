@@ -1912,13 +1912,22 @@ window.__require = function e(t, n, o) {
             return r(t, e),
             t.prototype.onLoad = function() {
                 l.GameManager.setView(this, this.gameTable, this.chooseView),
-                this.loadFinish()
+                this.loadFinish();
+				
+				//埋点 激励用完，隐藏提示
+				var btn_tishi = cc.find("btn_tishi", this.node);
+				this.TimerCheckAd = setInterval(function(){
+					window.h5api && window.h5api.canPlayAd(function(data){
+						btn_tishi.active =  data.canPlayAd;
+					}.bind(this));
+				}, 500);
             }
             ,
             t.prototype.onDestroy = function() {
+				clearInterval(this.TimerCheckAd);
                 p.GameDataManager.gameData.refuseData(),
                 g.GameAudio.stopAll(),
-                this.onGameOver()
+                this.onGameOver();
             }
             ,
             t.prototype.loadFinish = function() {
@@ -1943,18 +1952,27 @@ window.__require = function e(t, n, o) {
                 "touchstart" == t) {
                     if ("btn_tishi" == n && null == this.tipsScript) {
 						this.unschedule(this.timerSchedule);
-						
 						//埋点 激励回调下面。拒绝提示 应该回调 this.schedule(this.timerSchedule, 1);
-						
 						var thisObj = this;
-						{
-							this.schedule(this.timerSchedule, 1);
-							var o = y.RecordGrid.getLastIdiomAry()[0];
-							thisObj.tipsScript = f.GameEngine.showTips(o);
-							setTimeout(function(){
-								null != thisObj.tipsScript && (thisObj.tipsScript.close(),
-								thisObj.tipsScript = null)
-							}.bind(thisObj), 2000);
+						if(window.h5api && confirm("是否播放视频,获得相应奖励？")){
+							window.h5api.playAd(function(obj){
+								console.log('代码:' + obj.code + ',消息:' + obj.message);
+								if (obj.code === 10000) {
+									console.log('开始播放');
+								} else if (obj.code === 10001) {
+									{
+										this.schedule(this.timerSchedule, 1);
+										var o = y.RecordGrid.getLastIdiomAry()[0];
+										thisObj.tipsScript = f.GameEngine.showTips(o);
+										setTimeout(function(){
+											null != thisObj.tipsScript && (thisObj.tipsScript.close(),
+											thisObj.tipsScript = null)
+										}.bind(thisObj), 2000);
+									}
+								} else {
+									console.log('广告异常');
+								}
+							}.bind(this));
 						}
                     }
                 } else if ("touchend" == t)
@@ -2824,8 +2842,8 @@ window.__require = function e(t, n, o) {
                 recomNode.runAction(action);
                 recomNode.on(cc.Node.EventType.TOUCH_START, function(){
                     //埋点 推荐更多好玩
-                    console.log("more game");
-					
+                   // console.log("more game");
+					window.h5api && window.h5api.showRecommend();
                 }, this);	
 				this.node.addChild(recomNode);
 				
@@ -2856,13 +2874,21 @@ window.__require = function e(t, n, o) {
                             this.btn_myinfo.node.on(cc.Node.EventType.TOUCH_END, function() {
                                 h.GameAudio.playBtnEffect();
 								//埋点 分享。由玩家信息按钮改
-								console.log("share");
+							//	console.log("share");
+								window.h5api && window.h5api.share();
 							  //  m.GameEngine.changeScene(d.GameSceneHepler.MYINFO)
                             }),
                             this.btn_rank.node.on(cc.Node.EventType.TOUCH_END, function() {
                                 h.GameAudio.playBtnEffect();
 								//埋点 排行榜 
-								console.log("ranking");
+								//console.log("ranking");
+								if(window.h5api){
+									if (window.h5api.isLogin()) {
+									 window.h5api.showRanking();
+									} else if (confirm("登录后才能看到好友哦~")) {
+										window.h5api.login(function (obj) { });
+									}
+								}
                               //  var t = cc.instantiate(e.wxRankPre);
                                 //cc.director.getScene().addChild(t)
                             }),
