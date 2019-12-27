@@ -1911,6 +1911,7 @@ window.__require = function e(t, n, o) {
             }
             return r(t, e),
             t.prototype.onLoad = function() {
+				this.autoAdapteScreen();
                 l.GameManager.setView(this, this.gameTable, this.chooseView),
                 this.loadFinish();
 				
@@ -1923,6 +1924,27 @@ window.__require = function e(t, n, o) {
 				}, 500);
             }
             ,
+			t.prototype.autoAdapteScreen = function(){
+				// 适配解决方案
+				let _canvas = cc.Canvas.instance;
+			// 设计分辨率比
+				let _rateR = _canvas.designResolution.height/_canvas.designResolution.width;
+			// 显示分辨率比
+				let _rateV = cc.winSize.height/cc.winSize.width;
+				console.log("winSize: rateR: "+_rateR+" rateV: "+_rateV);
+				if (_rateV > _rateR)
+				{
+					_canvas.fitHeight = false;
+					_canvas.fitWidth = true;
+					console.log("winSize: fitWidth");
+				}
+				else
+				{
+					_canvas.fitHeight = true;
+					_canvas.fitWidth = false;
+					console.log("winSize: fitHeight");
+				}
+			},
             t.prototype.onDestroy = function() {
 				clearInterval(this.TimerCheckAd);
                 p.GameDataManager.gameData.refuseData(),
@@ -1973,6 +1995,8 @@ window.__require = function e(t, n, o) {
 									console.log('广告异常');
 								}
 							}.bind(this));
+						}else{
+							this.schedule(this.timerSchedule, 1);
 						}
                     }
                 } else if ("touchend" == t)
