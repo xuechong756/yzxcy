@@ -4290,7 +4290,14 @@ window.__require = function e(t, n, o) {
                 this.btn_share.node.on(cc.Node.EventType.TOUCH_END, this.onClickShare),
                 this.btn_continue.node.on(cc.Node.EventType.TOUCH_END, this.onClickContinue),
                 this.btn_back.node.on(cc.Node.EventType.TOUCH_END, this.onClickBack),
-                this.displayRedPackScene()
+                this.displayRedPackScene();
+				
+				var score = l.GameDataManager.gameData.tempScore.toString();
+				//埋点 
+			//	console.log("score:" + score);
+				if(window.h5api){
+					 window.h5api.isLogin() && window.h5api.submitRanking(score, function(e) {});
+				}
             }
             ,
             t.prototype.onDestroy = function() {}
