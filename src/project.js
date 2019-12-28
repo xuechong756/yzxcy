@@ -1314,14 +1314,17 @@ window.__require = function e(t, n, o) {
             }
             ,
             e.prototype.shareGame = function() {
-                wx.shareAppMessage({
+				//埋点 分享
+			//	console.log("share");
+				window.h5api && window.h5api.share();
+               /* wx.shareAppMessage({
                     title: "\u67da\u5b50\u6d88\u6d88\u4e50\uff0c\u8d8a\u6d88\u8d8a\u8d5a\u94b1",
                     imageUrl: "https://liubowen.top/dzk-res/share/70001.png",
                     query: "sharePlayerId=" + s.GameDataManager.userData.playerId
                 }),
                 this.doPost(p.ServerUrls.SHARE_URL, {
                     playerId: s.GameDataManager.userData.playerId
-                })
+                })*/
             }
             ,
             e.prototype.showPrefab = function(e) {
@@ -1974,8 +1977,10 @@ window.__require = function e(t, n, o) {
                 "touchstart" == t) {
                     if ("btn_tishi" == n && null == this.tipsScript) {
 						this.unschedule(this.timerSchedule);
+						this.unschedule(this.timerProgress);
 						//埋点 激励回调下面。拒绝提示 应该回调 this.schedule(this.timerSchedule, 1);
 						var thisObj = this;
+					
 						if(window.h5api && confirm("是否播放视频,获得相应奖励？")){
 							window.h5api.playAd(function(obj){
 								console.log('代码:' + obj.code + ',消息:' + obj.message);
@@ -1984,6 +1989,7 @@ window.__require = function e(t, n, o) {
 								} else if (obj.code === 10001) {
 									{
 										thisObj.schedule(thisObj.timerSchedule, 1);
+										 thisObj.schedule(this.timerProgress, this.ScheduleEE);
 										var o = y.RecordGrid.getLastIdiomAry()[0];
 										thisObj.tipsScript = f.GameEngine.showTips(o);
 										setTimeout(function(){
@@ -1994,10 +2000,12 @@ window.__require = function e(t, n, o) {
 								} else {
 									//console.log('广告异常');
 									thisObj.schedule(thisObj.timerSchedule, 1);
+									thisObj.schedule(this.timerProgress, this.ScheduleEE);
 								}
 							}.bind(this));
 						}else{
 							this.schedule(this.timerSchedule, 1);
+							thisObj.schedule(this.timerProgress, this.ScheduleEE);
 						}
                     }
                 } else if ("touchend" == t)
@@ -2030,14 +2038,15 @@ window.__require = function e(t, n, o) {
 			}
             ,
             t.prototype.createScheBar = function() {
-                var e = .01 * p.GameDataManager.gameData.totalGameTime;
+                this.ScheduleEE = .01 * p.GameDataManager.gameData.totalGameTime;
                 this.scheTimes = 100;
-                e < 0 || this.schedule(function(e) {
-                    this.scheTimes--;
-                    var t = .01 * this.scheTimes;
-                    this.bar_time.progress = t
-                }, e)
-            }
+                this.ScheduleEE < 0 || this.schedule(this.timerProgress, this.ScheduleEE);
+            },
+			t.prototype.timerProgress = function(){
+				this.scheTimes--;
+                var t = .01 * this.scheTimes;
+                this.bar_time.progress = t
+			}
             ,
             t.prototype.addScheTimes = function(e) {
                 if ("number" == typeof e) {
@@ -4309,9 +4318,9 @@ window.__require = function e(t, n, o) {
             }
             ,
             t.prototype.displayRedPackScene = function() {
-                Math.random() < .8 || (f.StorageInfo.getRedPackTimes() <= l.GameDataManager.gameData.redPackTimes ? this.btn_redpack.node.active = !0 : 0 == this.judgeIsSomeDay() && (m.Tools.resetDate(),
-                f.StorageInfo.resetRedPackTimes(),
-                this.btn_redpack.node.active = !0))
+              //  Math.random() < .8 || (f.StorageInfo.getRedPackTimes() <= l.GameDataManager.gameData.redPackTimes ? this.btn_redpack.node.active = !0 : 0 == this.judgeIsSomeDay() && (m.Tools.resetDate(),
+              //  f.StorageInfo.resetRedPackTimes(),
+               // this.btn_redpack.node.active = !0))
             }
             ,
             t.prototype.judgeIsSomeDay = function() {
